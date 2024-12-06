@@ -1,11 +1,9 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from PIL.ImageColor import colormap
+import numpy as np
+import pandas as pd
 from matplotlib.colors import ListedColormap
-
+from matplotlib.pyplot import xticks
 from sklearn.cluster import KMeans
-
 
 # Wczytaj plik csv
 file = './Dane/data2.csv'
@@ -83,6 +81,7 @@ k_means(1, 1, data['Szerokosc kielicha'], data['Dlugosc platka'], 'Szerokosc kie
 k_means(2, 0, data['Szerokosc kielicha'], data['Szerokosc platka'], 'Szerokosc kielicha', 'Szerokosc platka')
 k_means(2, 1, data['Dlugosc platka'], data['Szerokosc platka'], 'Dlugosc platka', 'Szerokosc platka')
 
+fig1, axs1 = plt.subplots(3, 2, figsize=(10, 14))
 
 def k_means_wcss(x, y, feature_data1, feature_data2, desc1, desc2):
     """
@@ -112,6 +111,13 @@ def k_means_wcss(x, y, feature_data1, feature_data2, desc1, desc2):
         iter_array.append(kmeans.n_iter_)
         wcss_array.append(kmeans.inertia_)
         print(f'K={k}, iter={kmeans.n_iter_}, wcss={kmeans.inertia_}')
+
+    axs1[x, y].set_xticks(range(2, 11))
+    axs1[x, y].set_ylim(0, np.ceil(1.1 * max(wcss_array)))
+    axs1[x, y].plot(range(2, 11), wcss_array, marker='o')
+    axs1[x, y].set_title(f'{desc1} vs {desc2} - WCSS')
+    axs1[x, y].set_xlabel('K')
+    axs1[x, y].set_ylabel('WCSS')
 
 k_means_wcss(0, 0, data['Dlugosc kielicha'], data['Szerokosc kielicha'], 'Dlugosc kielicha', 'Szerokosc kielicha')
 k_means_wcss(0, 1, data['Dlugosc kielicha'], data['Dlugosc platka'], 'Dlugosc kielicha', 'Dlugosc platka')
