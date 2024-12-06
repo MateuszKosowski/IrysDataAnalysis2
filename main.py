@@ -83,6 +83,43 @@ k_means(1, 1, data['Szerokosc kielicha'], data['Dlugosc platka'], 'Szerokosc kie
 k_means(2, 0, data['Szerokosc kielicha'], data['Szerokosc platka'], 'Szerokosc kielicha', 'Szerokosc platka')
 k_means(2, 1, data['Dlugosc platka'], data['Szerokosc platka'], 'Dlugosc platka', 'Szerokosc platka')
 
+
+def k_means_wcss(x, y, feature_data1, feature_data2, desc1, desc2):
+    """
+    Wykonuje algorytm k-średnich na danych i wyświetla wyniki na wykresie.
+    :param x: współrzędna x wykresu
+    :param y: współrzędna y wykresu
+    :param feature_data1: dane numeryczne dla danej cechy 1.
+    :param feature_data2: dane numeryczne dla danej cechy 2.
+    :param desc1: opis danej cechy 1.
+    :param desc2: opis danej cechy 2.
+    :return: None
+    """
+
+    feature_data_norm_1 = (feature_data1 - feature_data1.min()) / (feature_data1.max() - feature_data1.min())
+    feature_data_norm_2 = (feature_data2 - feature_data2.min()) / (feature_data2.max() - feature_data2.min())
+
+    matrix_norm = np.array(list(zip(feature_data_norm_1, feature_data_norm_2)))
+
+    iter_array = []
+    wcss_array = []
+
+    print('\n-----------------')
+    print('Opis:', desc1, desc2)
+    for k in range(2, 11):
+        kmeans = KMeans(n_clusters=k, init='random', max_iter=100)
+        kmeans.fit(matrix_norm)
+        iter_array.append(kmeans.n_iter_)
+        wcss_array.append(kmeans.inertia_)
+        print(f'K={k}, iter={kmeans.n_iter_}, wcss={kmeans.inertia_}')
+
+k_means_wcss(0, 0, data['Dlugosc kielicha'], data['Szerokosc kielicha'], 'Dlugosc kielicha', 'Szerokosc kielicha')
+k_means_wcss(0, 1, data['Dlugosc kielicha'], data['Dlugosc platka'], 'Dlugosc kielicha', 'Dlugosc platka')
+k_means_wcss(1, 0, data['Dlugosc kielicha'], data['Szerokosc platka'], 'Dlugosc kielicha', 'Szerokosc platka')
+k_means_wcss(1, 1, data['Szerokosc kielicha'], data['Dlugosc platka'], 'Szerokosc kielicha', 'Dlugosc platka')
+k_means_wcss(2, 0, data['Szerokosc kielicha'], data['Szerokosc platka'], 'Szerokosc kielicha', 'Szerokosc platka')
+k_means_wcss(2, 1, data['Dlugosc platka'], data['Szerokosc platka'], 'Dlugosc platka', 'Szerokosc platka')
+
 # Ustawienie odstępów między wykresami
 plt.subplots_adjust(wspace=0.3, hspace=0.6)
 
