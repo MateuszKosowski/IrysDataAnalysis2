@@ -1,3 +1,5 @@
+import time
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -45,27 +47,27 @@ for i in range(4):
 def k_means():
 
     # Rysujemy wykres, gdzie punkty są kolorowane na podstawie przynależności do klastra, ale bez wypełnienia
-    axs[0, 0].scatter(matrix[:, 0], matrix[:, 1], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[0, 0].scatter(matrix[:, 0], matrix[:, 1], facecolors='none', edgecolors=[color_array[j] for j in y_kmeans], s=50)
     axs[0, 0].set_xlabel('Długość działki kielicha [cm]')
     axs[0, 0].set_ylabel('Szerokość działki kielicha [cm]')
 
-    axs[0, 1].scatter(matrix[:, 0], matrix[:, 2], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[0, 1].scatter(matrix[:, 0], matrix[:, 2], facecolors='none', edgecolors=[color_array[j] for j in y_kmeans], s=50)
     axs[0, 1].set_xlabel('Długość działki kielicha [cm]')
     axs[0, 1].set_ylabel('Długość płatka [cm]')
 
-    axs[1, 0].scatter(matrix[:, 0], matrix[:, 3], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[1, 0].scatter(matrix[:, 0], matrix[:, 3], facecolors='none', edgecolors=[color_array[j] for j in y_kmeans], s=50)
     axs[1, 0].set_xlabel('Długość działki kielicha [cm]')
     axs[1, 0].set_ylabel('Szerokość płatka [cm]')
 
-    axs[1, 1].scatter(matrix[:, 1], matrix[:, 2], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[1, 1].scatter(matrix[:, 1], matrix[:, 2], facecolors='none', edgecolors=[color_array[j] for j in y_kmeans], s=50)
     axs[1, 1].set_xlabel('Szerokość działki kielicha [cm]')
     axs[1, 1].set_ylabel('Długość płatka [cm]')
 
-    axs[2, 0].scatter(matrix[:, 1], matrix[:, 3], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[2, 0].scatter(matrix[:, 1], matrix[:, 3], facecolors='none', edgecolors=[color_array[j] for j in y_kmeans], s=50)
     axs[2, 0].set_xlabel('Szerokość działki kielicha [cm]')
     axs[2, 0].set_ylabel('Szerokość płatka [cm]')
 
-    axs[2, 1].scatter(matrix[:, 2], matrix[:, 3], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[2, 1].scatter(matrix[:, 2], matrix[:, 3], facecolors='none', edgecolors=[color_array[j] for j in y_kmeans], s=50)
     axs[2, 1].set_xlabel('Długość płatka [cm]')
     axs[2, 1].set_ylabel('Szerokość płatka [cm]')
 
@@ -111,4 +113,3 @@ plt.subplots_adjust(wspace=0.3, hspace=0.6)
 
 # Wyświetlenie wykresów
 plt.show()
-
