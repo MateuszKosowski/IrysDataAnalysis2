@@ -100,9 +100,8 @@ def k_means_wcss():
     ax = fig1.add_subplot(1, 1, 1)
     ax.plot(range(2, 11), wcss_array)
     ax.scatter(range(2, 11), wcss_array)
-    ax.set_xlabel('k')
-    ax.set_ylabel('WCSS')
-    ax.set_title('Wykres zależności WCSS od współczynnika k')
+    ax.set_xlabel('Liczba klastrów')
+    ax.set_ylabel('Wartość WCSS')
 
 k_means_wcss()
 
