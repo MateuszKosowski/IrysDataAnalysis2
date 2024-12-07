@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.colors import ListedColormap
-from matplotlib.pyplot import xticks
 from sklearn.cluster import KMeans
 
 # Wczytaj plik csv
@@ -14,120 +13,102 @@ data = pd.read_csv(file, header=None, sep=',')
 data.columns = ['Dlugosc kielicha', 'Szerokosc kielicha', 'Dlugosc platka', 'Szerokosc platka']
 
 # Tworzymy nową figurę i ustawiamy jej rozmiar
-fig, axs = plt.subplots(3, 2, figsize=(8, 14))
+fig, axs = plt.subplots(3, 2, figsize=(10, 18))
 
 # Tworzymy własną mapę kolorów
 color_array = ['red', 'green', 'blue']
 custom_cmap = ListedColormap(color_array)
 
-# TODO: KOSMETYKA - rozmiary, kolory, opisy, kształty, itp.
-def k_means(x, y, feature_data1, feature_data2, desc1, desc2):
-    """
-    Wykonuje algorytm k-średnich na danych i wyświetla wyniki na wykresie.
-    :param x: współrzędna x wykresu
-    :param y: współrzędna y wykresu
-    :param feature_data1: dane numeryczne dla danej cechy 1.
-    :param feature_data2: dane numeryczne dla danej cechy 2.
-    :param desc1: opis danej cechy 1.
-    :param desc2: opis danej cechy 2.
-    :return: None
-    """
-    # Normalizujemy dane
-    feature_data_norm_1 = (feature_data1 - feature_data1.min()) / (feature_data1.max() - feature_data1.min())
-    feature_data_norm_2 = (feature_data2 - feature_data2.min()) / (feature_data2.max() - feature_data2.min())
+# Tworzymy macierz danych i normalizujemy ją
+matrix = np.array(data)
+matrix_norm = np.array((data - data.min()) / (data.max() - data.min()))
 
-    # Tworzymy macierz danych
-    # zip - łączy dwie listy w jedną
-    # list - tworzy listę z obiektu zip
-    matrix = np.array(list(zip(feature_data1, feature_data2)))
-    matrix_norm = np.array(list(zip(feature_data_norm_1, feature_data_norm_2)))
+# Tworzymy obiekt kMeans
+# n_clusters - liczba klastrów
+# max_iter - maksymalna liczba iteracji
+kmeans = KMeans(n_clusters=3, init='random', max_iter=20)
 
-    # Tworzymy obiekt kMeans
-    # n_clusters - liczba klastrów
-    # max_iter - maksymalna liczba iteracji
-    kmeans = KMeans(n_clusters=3, init='random', max_iter=20)
+# Uczymy model
+kmeans.fit(matrix_norm)
 
-    # Uczymy model
-    kmeans.fit(matrix_norm)
+# Przewidujemy przynależność do klastra
+y_kmeans = kmeans.predict(matrix_norm)
 
-    # Przewidujemy przynależność do klastra
-    y_kmeans = kmeans.predict(matrix_norm)
+# Odwracamy normalizację
+centers = kmeans.cluster_centers_
+
+# Odwracamy normalizację centroidów
+centers_original = np.zeros_like(centers)
+for i in range(4):
+    centers_original[:, i] = centers[:, i] * (matrix[:, i].max() - matrix[:, i].min()) + matrix[:, i].min()
+
+def k_means():
 
     # Rysujemy wykres, gdzie punkty są kolorowane na podstawie przynależności do klastra, ale bez wypełnienia
-    axs[x, y].scatter(matrix[:, 0], matrix[:, 1], c=y_kmeans, s=50, cmap=custom_cmap, edgecolors='k',)
+    axs[0, 0].scatter(matrix[:, 0], matrix[:, 1], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[0, 0].set_xlabel('Długość działki kielicha [cm]')
+    axs[0, 0].set_ylabel('Szerokość działki kielicha [cm]')
 
-    # Odwracamy normalizację
-    centers = kmeans.cluster_centers_
+    axs[0, 1].scatter(matrix[:, 0], matrix[:, 2], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[0, 1].set_xlabel('Długość działki kielicha [cm]')
+    axs[0, 1].set_ylabel('Długość płatka [cm]')
 
-    # Odwracamy normalizację centroidów
-    centers_original = np.zeros_like(centers)
-    centers_original[:, 0] = centers[:, 0] * (feature_data1.max() - feature_data1.min()) + feature_data1.min()
-    centers_original[:, 1] = centers[:, 1] * (feature_data2.max() - feature_data2.min()) + feature_data2.min()
+    axs[1, 0].scatter(matrix[:, 0], matrix[:, 3], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[1, 0].set_xlabel('Długość działki kielicha [cm]')
+    axs[1, 0].set_ylabel('Szerokość płatka [cm]')
+
+    axs[1, 1].scatter(matrix[:, 1], matrix[:, 2], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[1, 1].set_xlabel('Szerokość działki kielicha [cm]')
+    axs[1, 1].set_ylabel('Długość płatka [cm]')
+
+    axs[2, 0].scatter(matrix[:, 1], matrix[:, 3], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[2, 0].set_xlabel('Szerokość działki kielicha [cm]')
+    axs[2, 0].set_ylabel('Szerokość płatka [cm]')
+
+    axs[2, 1].scatter(matrix[:, 2], matrix[:, 3], facecolors='none', edgecolors=[color_array[i] for i in y_kmeans], s=50)
+    axs[2, 1].set_xlabel('Długość płatka [cm]')
+    axs[2, 1].set_ylabel('Szerokość płatka [cm]')
 
     # Rysujemy centra klastrów na wykresie w oryginalnej skali
-    axs[x, y].scatter(centers_original[:, 0], centers_original[:, 1], c=color_array[:], s=200, alpha=1.0)
+    axs[0, 0].scatter(centers_original[:, 0], centers_original[:, 1], c=color_array[:], s=100, alpha=1.0, marker='D', edgecolors="k")
+    axs[0, 1].scatter(centers_original[:, 0], centers_original[:, 2], c=color_array[:], s=100, alpha=1.0, marker='D', edgecolors="k")
+    axs[1, 0].scatter(centers_original[:, 0], centers_original[:, 3], c=color_array[:], s=100, alpha=1.0, marker='D', edgecolors="k")
+    axs[1, 1].scatter(centers_original[:, 1], centers_original[:, 2], c=color_array[:], s=100, alpha=1.0, marker='D', edgecolors="k")
+    axs[2, 0].scatter(centers_original[:, 1], centers_original[:, 3], c=color_array[:], s=100, alpha=1.0, marker='D', edgecolors="k")
+    axs[2, 1].scatter(centers_original[:, 2], centers_original[:, 3], c=color_array[:], s=100, alpha=1.0, marker='D', edgecolors="k")
 
-    # Ustawiamy tytuł wykresu
-    axs[x, y].set_title(f'{desc1} vs {desc2}')
 
-    # Ustawiamy etykiety osi
-    axs[x, y].set_xlabel(desc1)
-    axs[x, y].set_ylabel(desc2)
+k_means()
 
-k_means(0, 0, data['Dlugosc kielicha'], data['Szerokosc kielicha'], 'Dlugosc kielicha', 'Szerokosc kielicha')
-k_means(0, 1, data['Dlugosc kielicha'], data['Dlugosc platka'], 'Dlugosc kielicha', 'Dlugosc platka')
-k_means(1, 0, data['Dlugosc kielicha'], data['Szerokosc platka'], 'Dlugosc kielicha', 'Szerokosc platka')
-k_means(1, 1, data['Szerokosc kielicha'], data['Dlugosc platka'], 'Szerokosc kielicha', 'Dlugosc platka')
-k_means(2, 0, data['Szerokosc kielicha'], data['Szerokosc platka'], 'Szerokosc kielicha', 'Szerokosc platka')
-k_means(2, 1, data['Dlugosc platka'], data['Szerokosc platka'], 'Dlugosc platka', 'Szerokosc platka')
+plt.subplots_adjust(wspace=0.3, hspace=0.3)
 
-fig1, axs1 = plt.subplots(3, 2, figsize=(10, 14))
-
-def k_means_wcss(x, y, feature_data1, feature_data2, desc1, desc2):
-    """
-    Wykonuje algorytm k-średnich na danych i wyświetla wyniki na wykresie.
-    :param x: współrzędna x wykresu
-    :param y: współrzędna y wykresu
-    :param feature_data1: dane numeryczne dla danej cechy 1.
-    :param feature_data2: dane numeryczne dla danej cechy 2.
-    :param desc1: opis danej cechy 1.
-    :param desc2: opis danej cechy 2.
-    :return: None
-    """
-
-    feature_data_norm_1 = (feature_data1 - feature_data1.min()) / (feature_data1.max() - feature_data1.min())
-    feature_data_norm_2 = (feature_data2 - feature_data2.min()) / (feature_data2.max() - feature_data2.min())
-
-    matrix_norm = np.array(list(zip(feature_data_norm_1, feature_data_norm_2)))
+def k_means_wcss():
 
     iter_array = []
     wcss_array = []
 
     print('\n-----------------')
-    print('Opis:', desc1, desc2)
+    print('WCSS')
     for k in range(2, 11):
-        kmeans = KMeans(n_clusters=k, init='random', max_iter=100)
-        kmeans.fit(matrix_norm)
-        iter_array.append(kmeans.n_iter_)
-        wcss_array.append(kmeans.inertia_)
-        print(f'K={k}, iter={kmeans.n_iter_}, wcss={kmeans.inertia_}')
+        kmeans1 = KMeans(n_clusters=k, init='random', max_iter=100)
+        kmeans1.fit(matrix_norm)
+        iter_array.append(kmeans1.n_iter_)
+        wcss_array.append(kmeans1.inertia_)
+        print(f'k={k} wcss={kmeans1.inertia_} iter={kmeans1.n_iter_}')
 
-    axs1[x, y].set_xticks(range(2, 11))
-    axs1[x, y].set_ylim(0, np.ceil(1.1 * max(wcss_array)))
-    axs1[x, y].plot(range(2, 11), wcss_array, marker='o')
-    axs1[x, y].set_title(f'{desc1} vs {desc2} - WCSS')
-    axs1[x, y].set_xlabel('K')
-    axs1[x, y].set_ylabel('WCSS')
+    fig1 = plt.figure(figsize=(6,4))
+    ax = fig1.add_subplot(1, 1, 1)
+    ax.plot(range(2, 11), wcss_array)
+    ax.scatter(range(2, 11), wcss_array)
+    ax.set_xlabel('k')
+    ax.set_ylabel('WCSS')
+    ax.set_title('Wykres zależności WCSS od współczynnika k')
 
-k_means_wcss(0, 0, data['Dlugosc kielicha'], data['Szerokosc kielicha'], 'Dlugosc kielicha', 'Szerokosc kielicha')
-k_means_wcss(0, 1, data['Dlugosc kielicha'], data['Dlugosc platka'], 'Dlugosc kielicha', 'Dlugosc platka')
-k_means_wcss(1, 0, data['Dlugosc kielicha'], data['Szerokosc platka'], 'Dlugosc kielicha', 'Szerokosc platka')
-k_means_wcss(1, 1, data['Szerokosc kielicha'], data['Dlugosc platka'], 'Szerokosc kielicha', 'Dlugosc platka')
-k_means_wcss(2, 0, data['Szerokosc kielicha'], data['Szerokosc platka'], 'Szerokosc kielicha', 'Szerokosc platka')
-k_means_wcss(2, 1, data['Dlugosc platka'], data['Szerokosc platka'], 'Dlugosc platka', 'Szerokosc platka')
+k_means_wcss()
 
 # Ustawienie odstępów między wykresami
 plt.subplots_adjust(wspace=0.3, hspace=0.6)
 
 # Wyświetlenie wykresów
 plt.show()
+
